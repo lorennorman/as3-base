@@ -1,12 +1,29 @@
 require 'rake'
 
-# If we ever need to push the settings out of the source control index...
-# (good for multiple devs with disparate environments)
-# (create config/properties.yml and .gitignore it)
-#require 'yaml'
-#config = YAML.load_file(File.join('config', 'properties.yml'))
+#########
+# System-dependent settings: Each developer will set these for themselves in config/properties.yml
+#########
 
-# Project Directories
+# Load config/properties.yml. If it doesn't exist, copy config/properties.yml.sample to it
+require 'yaml'
+begin
+  config = YAML.load_file(File.join('config', 'properties.yml'))
+rescue
+  sh "cp config/properties.yml.sample config/properties.yml"
+  puts "You need to edit config/properties.yml to match your system."
+  exit
+end
+
+# Applications
+flash_player_path = config["applications"]["flash_player_path"]
+web_browser_path =  config["applications"]["web_browser_path"]
+flash_log =         config["applications"]["flash_log"]
+
+
+#########
+# Project-wide settings: These settings should be the same for all developers on the project
+#########
+
 source_dir =    "src"
 library_dir =   "lib"
 test_dir =      "test"
@@ -25,9 +42,6 @@ template_output = "#{build_dir}/index.html"
 test_file =   "#{test_dir}/Main.mxml"
 test_output = "#{build_dir}/TestMain.swf"
 
-# Applications
-flash_player_path = '/Applications/Adobe\ Flash\ CS3/Players/Debug/Flash\ Player.app'
-web_browser_path =  '/Applications/Firefox.app'
 
 desc "Compiles and launches the development version of the app. Calling 'rake' does this automatically."
 task :default => ["build:compile:development"] do
@@ -55,6 +69,22 @@ namespace :build do
     end
   end
 end
+
+namespace :log do
+  desc "Convenience task for tailing your flash logs."
+  task :tail do
+    sh "tail -f #{flash_log}"
+  end
+  
+  desc "Empties your flash log (because it gets big)."
+  task :flush do
+    sh "rm #{flash_log}"
+    sh "touch #{flash_log}"
+  end
+end
+
+desc "Shortcut to flush and tail your logs."
+task :log => ["log:flush", "log:tail"]
 
 desc "Compile and launch the test suite"
 task :test => ["build:init"] do

@@ -1,0 +1,11 @@
+# Run rake properties:create to copy this file over to properties.yml, then edit to suit
+applications:
+  web_browser_path: '/Applications/Firefox.app'
+  
+  # Default Flex install on OSX Leopard:
+  flash_player_path: '/Applications/Adobe\ Flex\ Builder\ 3/Player/mac/Flash\ Player.app'
+  # Default Flash CS3 install on OSX Leopard:
+  # flash_player_path: '/Applications/Adobe\ Flash\ CS3/Players/Debug/Flash\ Player.app'
+  
+  # Flash log file location:
+  flash_log: '~/Library/Preferences/Macromedia/Flash\ Player/Logs/flashlog.txt'
